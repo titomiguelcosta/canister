@@ -1,0 +1,37 @@
+version: "3.1"
+services:
+    mysql:
+      image: mysql:5.7
+      container_name: titomiguelcosta-canister-mysql
+      working_dir: /application
+      volumes:
+        - .:/application
+      environment:
+        - MYSQL_ROOT_PASSWORD=galinha
+        - MYSQL_DATABASE=canister
+        - MYSQL_USER=canister
+        - MYSQL_PASSWORD=galinha
+      ports:
+        - "8082:3306"
+
+    elasticsearch:
+      image: elasticsearch:5.4-alpine
+      container_name: titomiguelcosta-canister-elasticsearch
+
+    webserver:
+      image: nginx:alpine
+      container_name: titomiguelcosta-canister-webserver
+      working_dir: /application
+      volumes:
+          - .:/application
+          - ./docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      ports:
+       - "8080:80"
+
+    php-fpm:
+      build: docker/php-fpm
+      container_name: titomiguelcosta-canister-php-fpm
+      working_dir: /application
+      volumes:
+        - .:/application
+        - ./docker/php-fpm/php-ini-overrides.ini:/etc/php/7.3/fpm/conf.d/99-overrides.ini
